@@ -1,526 +1,16 @@
-// // V-1 
-// import React, { useState, useEffect, useRef } from "react";
-// import { motion, AnimatePresence } from "framer-motion";
-// import Pic1 from "./img/pic1.jpg";
-// import Pic2 from "./img/pic2.jpg";
-// import Pic3 from "./img/pic3.jpg";
-// import Pic4 from "./img/pic1.jpg"; // Extra small photo
-// import Pic5 from "./img/pic2.jpg"; // Extra small photo
-
-// // Import local playlist music files
-// import songA from "./music/Blue.mp3";
-// import songB from "./music/tummile.mp3";
-// import songC from "./music/wannabeyours.mp3";
-
-// interface Photo {
-//   url: string;
-//   caption: string;
-// }
-
-// const photos: Photo[] = [
-//   {
-//     url: Pic1,
-//     caption: "Happy Birthday to the one who makes every moment a comic adventure!",
-//   },
-//   {
-//     url: Pic2,
-//     caption: "To the queen of quirky laughs and endless fun – keep shining bright!",
-//   },
-//   {
-//     url: Pic3,
-//     caption: "Here's to a day as vibrant and unique as you are – let’s celebrate!",
-//   },
-// ];
-
-// // Extra photos for a sticky note gallery
-// const extraPhotos: Photo[] = [
-//   { url: Pic4, caption: "Extra Memory 1" },
-//   { url: Pic5, caption: "Extra Memory 2" },
-// ];
-
-// // Playlist song names and corresponding local music files
-// const playlist = ["Blue", "Tum Mile", "Wanna Be Yours"];
-// const songFiles = [songA, songB, songC];
-
-// interface PhotoGalleryProps {
-//   onComplete: () => void;
-//   stopBgMusic: () => void;
-// }
-
-// export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
-//   onComplete,
-//   stopBgMusic,
-// }) => {
-//   const [currentIndex, setCurrentIndex] = useState(0);
-//   const [currentSongIndex, setCurrentSongIndex] = useState<number | null>(null);
-//   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-//   // Change main photo every 5 seconds
-//   useEffect(() => {
-//     const timer = setTimeout(() => {
-//       setCurrentIndex((prevIndex) => (prevIndex + 1) % photos.length);
-//     }, 5000);
-//     return () => clearTimeout(timer);
-//   }, [currentIndex]);
-
-//   // Cleanup any playing audio when the component unmounts
-//   useEffect(() => {
-//     return () => {
-//       if (audioRef.current) {
-//         audioRef.current.pause();
-//         audioRef.current = null;
-//       }
-//     };
-//   }, []);
-
-//   const handleSongClick = (index: number) => {
-//     // Stop any currently playing playlist music
-//     if (audioRef.current) {
-//       audioRef.current.pause();
-//       audioRef.current.currentTime = 0;
-//     }
-//     // Ensure the background music is stopped
-//     stopBgMusic();
-//     setCurrentSongIndex(index);
-//     // Create a new Audio instance and play the selected song
-//     const newAudio = new Audio(songFiles[index]);
-//     audioRef.current = newAudio;
-//     newAudio.play().catch((error) =>
-//       console.log("Playlist audio playback failed:", error)
-//     );
-//   };
-
-//   return (
-//     <motion.div
-//       className="min-h-screen p-8 relative overflow-hidden"
-//       initial={{ opacity: 0 }}
-//       animate={{ opacity: 1 }}
-//       style={{ fontFamily: "Comic Neue, Comic Sans MS, cursive" }}
-//     >
-//       {/* Animated Background */}
-//       <motion.div
-//         className="absolute inset-0"
-//         initial={{ opacity: 0.8 }}
-//         animate={{ opacity: [0.8, 1, 0.8] }}
-//         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-//         style={{ background: "linear-gradient(135deg, #FF7E5F, #FEB47B)", zIndex: -3 }}
-//       />
-//       <motion.div
-//         className="absolute w-40 h-40 rounded-full bg-pink-500"
-//         initial={{ x: -150, y: -150, scale: 0.8, opacity: 0.7 }}
-//         animate={{ x: [-150, 20, -150], y: [-150, 50, -150] }}
-//         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-//         style={{ zIndex: -2 }}
-//       />
-//       <motion.div
-//         className="absolute w-32 h-32 rounded-full bg-purple-500"
-//         initial={{ x: 300, y: 250, scale: 0.8, opacity: 0.7 }}
-//         animate={{ x: [300, 100, 300], y: [250, 80, 250] }}
-//         transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-//         style={{ zIndex: -2 }}
-//       />
-
-//       {/* Header */}
-//       <h2 className="text-5xl text-center font-extrabold mb-12 bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-purple-600 drop-shadow-2xl">
-//         Our Epic Comic Memories!
-//       </h2>
-
-//       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
-//         {/* Left Column - Main Photo (Polaroid) Slider */}
-//         <div className="relative aspect-[3/4] w-full max-w-lg mx-auto">
-//           <AnimatePresence mode="wait">
-//             {photos.map(
-//               (photo, index) =>
-//                 index === currentIndex && (
-//                   <motion.div
-//                     key={index}
-//                     className="absolute w-full h-full flex items-center justify-center"
-//                     initial={{ opacity: 0, scale: 0.8, x: -100 }}
-//                     animate={{ opacity: 1, scale: 1, x: 0 }}
-//                     exit={{ opacity: 0, scale: 0.8, x: 100 }}
-//                     transition={{ duration: 0.8, ease: "easeInOut" }}
-//                   >
-//                     {/* Polaroid Frame */}
-//                     <div className="bg-white shadow-2xl rounded-sm w-full h-full p-4 pb-8 flex flex-col polaroid transform rotate-1">
-//                       <img
-//                         src={photo.url}
-//                         alt={`Memory ${index + 1}`}
-//                         className="object-cover w-full h-3/4 rounded-sm"
-//                       />
-//                       <div className="mt-3 text-center text-gray-700 text-sm font-semibold">
-//                         {photo.caption}
-//                       </div>
-//                     </div>
-//                   </motion.div>
-//                 )
-//             )}
-//           </AnimatePresence>
-//         </div>
-
-//         {/* Right Column - Playlist and Completion Button */}
-//         <div className="flex flex-col justify-center space-y-10">
-//           {/* Playlist Section */}
-//           <div className="backdrop-blur-lg bg-white/40 rounded-2xl p-8 shadow-2xl border-2 border-orange-300">
-//             <h3 className="text-3xl font-bold text-orange-800 mb-6 flex items-center">
-//               <span className="mr-3">🎶</span> Our Awesome Playlist
-//             </h3>
-//             <div className="space-y-4">
-//               {playlist.map((song, i) => (
-//                 <motion.div
-//                   key={i}
-//                   onClick={() => handleSongClick(i)}
-//                   className={`flex items-center p-4 rounded-xl transition-all cursor-pointer ${
-//                     currentSongIndex === i
-//                       ? "bg-white/60 border-2 border-pink-400"
-//                       : "hover:bg-white/60"
-//                   }`}
-//                   whileHover={{ scale: 1.03 }}
-//                 >
-//                   <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center text-white text-lg font-bold mr-4 drop-shadow-lg">
-//                     {i + 1}
-//                   </div>
-//                   <span className="text-gray-800 text-xl font-semibold">
-//                     {song}
-//                   </span>
-//                 </motion.div>
-//               ))}
-//             </div>
-//           </div>
-
-//           {/* Completion Button with layered glow */}
-//           <div className="relative mx-auto">
-//             <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-500 rounded-full blur-3xl opacity-40"></div>
-//             <motion.button
-//               className="relative px-10 py-5 bg-gradient-to-r from-orange-700 to-red-700 rounded-full text-2xl font-bold text-white shadow-2xl transform hover:-translate-y-1 hover:shadow-3xl"
-//               whileHover={{ scale: 1.05 }}
-//               whileTap={{ scale: 0.95 }}
-//               onClick={onComplete}
-//             >
-//               I wrote something epic for you, Madam Jii ❤️
-//             </motion.button>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Extra Photo Sticky Note */}
-//       <div className="absolute top-8 right-8 bg-yellow-200 p-4 rounded-lg shadow-2xl transform rotate-2">
-//         <h4 className="text-lg font-bold text-gray-800 mb-2">More Memories</h4>
-//         <div className="flex space-x-2">
-//           {extraPhotos.map((photo, idx) => (
-//             <motion.div
-//               key={idx}
-//               className="w-20 h-20 rounded-lg overflow-hidden shadow-md border-2 border-white"
-//               whileHover={{ scale: 1.1 }}
-//               transition={{ type: "spring", stiffness: 300 }}
-//             >
-//               <img
-//                 src={photo.url}
-//                 alt={photo.caption}
-//                 className="w-full h-full object-cover"
-//               />
-//             </motion.div>
-//           ))}
-//         </div>
-//       </div>
-//     </motion.div>
-//   );
-// };
-
-
-// import React, { useState, useEffect, useRef } from "react";
-// import { motion, AnimatePresence } from "framer-motion";
-// import Pic1 from "./img/pic1.jpg";
-// import Pic2 from "./img/pic2.jpg";
-// import Pic3 from "./img/pic3.jpg";
-// import Pic4 from "./img/pic1.jpg"; // Extra small photo
-// import Pic5 from "./img/pic2.jpg"; // Extra small photo
-
-// // Import local playlist music files
-// import songA from "./music/Blue.mp3";
-// import songB from "./music/tummile.mp3";
-// import songC from "./music/wannabeyours.mp3";
-
-// interface Photo {
-//   url: string;
-//   caption: string;
-// }
-
-// const photos: Photo[] = [
-//   {
-//     url: Pic1,
-//     caption: "Happy Birthday to the one who makes every moment a comic adventure!",
-//   },
-//   {
-//     url: Pic2,
-//     caption: "To the queen of quirky laughs and endless fun – keep shining bright!",
-//   },
-//   {
-//     url: Pic3,
-//     caption: "Here's to a day as vibrant and unique as you are – let’s celebrate!",
-//   },
-// ];
-
-// // Extra photos for a sticky note gallery
-// const extraPhotos: Photo[] = [
-//   { url: Pic4, caption: "Extra Memory 1" },
-//   { url: Pic5, caption: "Extra Memory 2" },
-// ];
-
-// // Playlist song names and corresponding local music files
-// const playlist = ["Blue", "Tum Mile", "Wanna Be Yours"];
-// const songFiles = [songA, songB, songC];
-
-// interface PhotoGalleryProps {
-//   onComplete: () => void;
-//   stopBgMusic: () => void;
-// }
-
-// export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
-//   onComplete,
-//   stopBgMusic,
-// }) => {
-//   const [currentIndex, setCurrentIndex] = useState(0);
-//   const [currentSongIndex, setCurrentSongIndex] = useState<number | null>(null);
-//   const [isFlipped, setIsFlipped] = useState(false); // For polaroid flip
-//   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-//   // Change main photo every 5 seconds
-//   useEffect(() => {
-//     const timer = setTimeout(() => {
-//       setCurrentIndex((prevIndex) => (prevIndex + 1) % photos.length);
-//       setIsFlipped(false); // reset flip when photo changes
-//     }, 5000);
-//     return () => clearTimeout(timer);
-//   }, [currentIndex]);
-
-//   // Cleanup any playing audio when the component unmounts
-//   useEffect(() => {
-//     return () => {
-//       if (audioRef.current) {
-//         audioRef.current.pause();
-//         audioRef.current = null;
-//       }
-//     };
-//   }, []);
-
-//   const handleSongClick = (index: number) => {
-//     // Stop any currently playing playlist music
-//     if (audioRef.current) {
-//       audioRef.current.pause();
-//       audioRef.current.currentTime = 0;
-//     }
-//     // Ensure the background music is stopped
-//     stopBgMusic();
-//     setCurrentSongIndex(index);
-//     // Create a new Audio instance and play the selected song
-//     const newAudio = new Audio(songFiles[index]);
-//     audioRef.current = newAudio;
-//     newAudio.play().catch((error) =>
-//       console.log("Playlist audio playback failed:", error)
-//     );
-//   };
-
-//   // Current displayed photo
-//   const currentPhoto = photos[currentIndex];
-
-//   return (
-//     <motion.div
-//       className="min-h-screen p-8 relative overflow-hidden"
-//       initial={{ opacity: 0 }}
-//       animate={{ opacity: 1 }}
-//       style={{ fontFamily: "Comic Neue, Comic Sans MS, cursive" }}
-//     >
-//       {/* Animated Gradient Background */}
-//       <motion.div
-//         className="absolute inset-0"
-//         initial={{ opacity: 0.8 }}
-//         animate={{ opacity: [0.8, 1, 0.8] }}
-//         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-//         style={{ background: "linear-gradient(135deg, #FF7E5F, #FEB47B)", zIndex: -3 }}
-//       />
-
-//       {/* Floating Pink Circle */}
-//       <motion.div
-//         className="absolute w-40 h-40 rounded-full bg-pink-500"
-//         initial={{ x: -150, y: -150, scale: 0.8, opacity: 0.7 }}
-//         animate={{ x: [-150, 20, -150], y: [-150, 50, -150] }}
-//         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-//         style={{ zIndex: -2 }}
-//       />
-
-//       {/* Floating Purple Circle */}
-//       <motion.div
-//         className="absolute w-32 h-32 rounded-full bg-purple-500"
-//         initial={{ x: 300, y: 250, scale: 0.8, opacity: 0.7 }}
-//         animate={{ x: [300, 100, 300], y: [250, 80, 250] }}
-//         transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-//         style={{ zIndex: -2 }}
-//       />
-
-//       {/* Header */}
-//       <h2 className="text-5xl text-center font-extrabold mb-12 bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-purple-600 drop-shadow-2xl">
-//         Our Epic Comic Memories!
-//       </h2>
-
-//       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
-//         {/* Left Column - Main Photo Polaroid with Flip */}
-//         <div className="relative aspect-[3/4] w-full max-w-md mx-auto">
-//           <AnimatePresence mode="wait">
-//             <motion.div
-//               key={currentIndex} // Re-trigger animation on index change
-//               className="absolute w-full h-full flex items-center justify-center"
-//               initial={{ opacity: 0, scale: 0.8, x: -100 }}
-//               animate={{ opacity: 1, scale: 1, x: 0 }}
-//               exit={{ opacity: 0, scale: 0.8, x: 100 }}
-//               transition={{ duration: 0.8, ease: "easeInOut" }}
-//               style={{ perspective: 1000 }} // For 3D flip
-//             >
-//               {/* Polaroid container with flip animation */}
-//               <motion.div
-//                 className="relative w-full h-full"
-//                 animate={{ rotateY: isFlipped ? 180 : 0 }}
-//                 transition={{ duration: 0.8, ease: "easeInOut" }}
-//                 style={{
-//                   transformStyle: "preserve-3d",
-//                   cursor: "pointer",
-//                 }}
-//                 onClick={() => setIsFlipped(!isFlipped)}
-//               >
-//                 {/* Polaroid Front */}
-//                 <motion.div
-//                   className="absolute inset-0 bg-white shadow-2xl rounded-sm p-2 pb-6 flex flex-col polaroid transform rotate-1"
-//                   style={{ backfaceVisibility: "hidden" }}
-//                 >
-//                   {/* Hand-drawn overlays on the front */}
-//                   <div className="absolute top-2 left-2 w-8 h-8 bg-no-repeat bg-contain"
-//                     style={{
-//                       backgroundImage: "url('https://raw.githubusercontent.com/gist/remarkablemark/2e8c2c04923c077e8c85fbe88336e18f/raw/27335df5fe9b4f2232a3c35071c27d4bb9fce4ad/star-doodle.png')",
-//                     }}
-//                   />
-//                   <div className="absolute bottom-2 right-2 w-10 h-10 bg-no-repeat bg-contain"
-//                     style={{
-//                       backgroundImage: "url('https://raw.githubusercontent.com/gist/remarkablemark/c8c2862b993e704f4198142498fc49c2/raw/a16551cbd98f52b5963047d0a6d223ec4df8f860/scribble-doodle.png')",
-//                     }}
-//                   />
-//                   <div className="flex-1 overflow-hidden rounded-sm">
-//                     <img
-//                       src={currentPhoto.url}
-//                       alt={`Memory ${currentIndex + 1}`}
-//                       className="object-cover w-full h-full"
-//                     />
-//                   </div>
-//                   <div className="mt-2 text-center text-gray-700 text-xs font-semibold">
-//                     {currentPhoto.caption}
-//                   </div>
-//                 </motion.div>
-
-//                 {/* Polaroid Back */}
-//                 <motion.div
-//                   className="absolute inset-0 bg-white shadow-2xl rounded-sm p-4 flex flex-col items-center justify-center"
-//                   style={{
-//                     rotateY: "180deg",
-//                     backfaceVisibility: "hidden",
-//                   }}
-//                 >
-//                   <h4 className="text-lg font-bold text-pink-600 mb-3">
-//                     A Special Note
-//                   </h4>
-//                   <p className="text-gray-700 text-sm text-center px-2">
-//                     I remember when we first laughed until our stomachs hurt.
-//                     Thanks for being the sunshine on a cloudy day, always!
-//                   </p>
-//                   <p className="text-sm text-gray-500 mt-2">
-//                     (Click again to flip back)
-//                   </p>
-//                 </motion.div>
-//               </motion.div>
-//             </motion.div>
-//           </AnimatePresence>
-//         </div>
-
-//         {/* Right Column - Playlist and Completion Button */}
-//         <div className="flex flex-col justify-center space-y-10">
-//           {/* Playlist Section */}
-//           <div className="backdrop-blur-lg bg-white/40 rounded-2xl p-8 shadow-2xl border-2 border-orange-300">
-//             <h3 className="text-3xl font-bold text-orange-800 mb-6 flex items-center">
-//               <span className="mr-3">🎶</span> Our Awesome Playlist
-//             </h3>
-//             <div className="space-y-4">
-//               {playlist.map((song, i) => (
-//                 <motion.div
-//                   key={i}
-//                   onClick={() => handleSongClick(i)}
-//                   className={`flex items-center p-4 rounded-xl transition-all cursor-pointer ${
-//                     currentSongIndex === i
-//                       ? "bg-white/60 border-2 border-pink-400"
-//                       : "hover:bg-white/60"
-//                   }`}
-//                   whileHover={{ scale: 1.03 }}
-//                 >
-//                   <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center text-white text-lg font-bold mr-4 drop-shadow-lg">
-//                     {i + 1}
-//                   </div>
-//                   <span className="text-gray-800 text-xl font-semibold">
-//                     {song}
-//                   </span>
-//                 </motion.div>
-//               ))}
-//             </div>
-//           </div>
-
-//           {/* Completion Button with layered glow */}
-//           <div className="relative mx-auto">
-//             <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-500 rounded-full blur-3xl opacity-40"></div>
-//             <motion.button
-//               className="relative px-10 py-5 bg-gradient-to-r from-orange-700 to-red-700 rounded-full text-2xl font-bold text-white shadow-2xl transform hover:-translate-y-1 hover:shadow-3xl"
-//               whileHover={{ scale: 1.05 }}
-//               whileTap={{ scale: 0.95 }}
-//               onClick={onComplete}
-//             >
-//               I wrote something epic for you, Madam Jii ❤️
-//             </motion.button>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Extra Photo Sticky Note */}
-//       <div className="absolute top-8 right-8 bg-yellow-200 p-4 rounded-lg shadow-2xl transform rotate-2">
-//         <h4 className="text-lg font-bold text-gray-800 mb-2">More Memories</h4>
-//         <div className="flex space-x-2">
-//           {extraPhotos.map((photo, idx) => (
-//             <motion.div
-//               key={idx}
-//               className="w-16 h-16 rounded-lg overflow-hidden shadow-md border-2 border-white"
-//               whileHover={{ scale: 1.1 }}
-//               transition={{ type: "spring", stiffness: 300 }}
-//             >
-//               <img
-//                 src={photo.url}
-//                 alt={photo.caption}
-//                 className="w-full h-full object-cover"
-//               />
-//             </motion.div>
-//           ))}
-//         </div>
-//       </div>
-//     </motion.div>
-//   );
-// };
-
-
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+
 import Pic1 from "./img/pic1.jpg";
 import Pic2 from "./img/pic2.jpg";
 import Pic3 from "./img/pic3.jpg";
-import Pic4 from "./img/pic1.jpg"; // Extra small photo
-import Pic5 from "./img/pic2.jpg"; // Extra small photo
+import Pic4 from "./img/extra1.jpg"; // Extra small photo
+import Pic5 from "./img/extra2.jpg"; // Extra small photo
 
 // Import local playlist music files
-import songA from "./music/Blue.mp3";
+import songA from "./music/kinnasona.mp3";
 import songB from "./music/tummile.mp3";
-import songC from "./music/wannabeyours.mp3";
+import songC from "./music/rangrez.mp3";
 
 interface Photo {
   url: string;
@@ -549,7 +39,7 @@ const extraPhotos: Photo[] = [
 ];
 
 // Playlist song names and corresponding local music files
-const playlist = ["Blue", "Tum Mile", "Wanna Be Yours"];
+const playlist = ["Kinna Sona", "Tum Mile", "O Rangrez"];
 const songFiles = [songA, songB, songC];
 
 interface PhotoGalleryProps {
@@ -601,7 +91,7 @@ const TimelineComponent: React.FC<{ onProceed: () => void }> = ({ onProceed }) =
           onClick={onProceed}
           className="px-8 py-4 bg-white text-black rounded-full hover:bg-[#FFB4B4] hover:text-white transition-transform duration-300 transform hover:scale-105 shadow-lg font-semibold"
         >
-          I have dedicated some songs for you! 🎵
+          Continueee! 🎵
         </button>
       </div>
       <style>{`
@@ -702,8 +192,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ onComplete, stopBgMu
           />
 
           {/* Header */}
-          <h2 className="text-5xl text-center font-extrabold mb-12 bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-purple-600 drop-shadow-2xl">
-            Our Epic Comic Memories!
+          <h2 className="text-5xl text-center font-extrabold mb-12 bg-clip-text bg-white text-transparent bg drop-shadow-2xl">
+            Our Gallery & Memories!
           </h2>
 
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -721,7 +211,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ onComplete, stopBgMu
                 >
                   {/* Polaroid container with flip animation */}
                   <motion.div
-                    className="relative w-full h-full"
+                    className="relative w-[500px] h-[500px]"
                     animate={{ rotateY: isFlipped ? 180 : 0 }}
                     transition={{ duration: 0.8, ease: "easeInOut" }}
                     style={{
@@ -753,7 +243,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ onComplete, stopBgMu
                           className="object-cover w-full h-full"
                         />
                       </div>
-                      <div className="mt-2 text-center text-gray-700 text-xs font-semibold">
+                      <div className="mt-2 text-center text-gray-700 text-xs font-semibold mb-8">
                         {currentPhoto.caption}
                       </div>
                     </motion.div>
@@ -787,7 +277,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ onComplete, stopBgMu
               {/* Playlist Section */}
               <div className="backdrop-blur-lg bg-white/40 rounded-2xl p-8 shadow-2xl border-2 border-orange-300">
                 <h3 className="text-3xl font-bold text-orange-800 mb-6 flex items-center">
-                  <span className="mr-3">🎶</span> Our Awesome Playlist
+                  <span className="mr-3">🎶</span> Our Playlist
                 </h3>
                 <div className="space-y-4">
                   {playlist.map((song, i) => (

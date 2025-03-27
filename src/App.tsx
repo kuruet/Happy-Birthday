@@ -9,11 +9,13 @@ import { FinalMessage } from './components/FinalMessage';
 import { PhotoGallery } from './components/PhotoGallery';
 import bgMusic from './components/music/tummile.mp3';
 
+import CoverImg from './components/img/main.jpg'
+
 // Cartoonish animated background with bright gradients
 function AnimatedBackground() {
   return (
     <motion.div
-      className="absolute inset-0 z-0"
+      className="absolute inset-0 z-0 overflow-hidden"
       animate={{
         background: [
           "linear-gradient(135deg, #FFEEAD, #FF6F69)",
@@ -26,7 +28,34 @@ function AnimatedBackground() {
         repeat: Infinity,
         ease: "easeInOut"
       }}
-    />
+    >
+      {/* Animated floating bubbles */}
+      {/* {Array.from({ length: 15 }).map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-white/20"
+          style={{
+            width: `${Math.random() * 100 + 50}px`,
+            height: `${Math.random() * 100 + 50}px`,
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+          }}
+          animate={{
+            y: [0, -100, -200],
+            x: [0, Math.random() * 100 - 50, 0],
+            opacity: [0.3, 0.8, 0],
+            scale: [0.5, 1.2, 0.8]
+          }}
+          transition={{
+            duration: Math.random() * 10 + 10,
+            delay: Math.random() * 5,
+            repeat: Infinity,
+            repeatType: "loop",
+            ease: "linear"
+          }}
+        />
+      ))} */}
+    </motion.div>
   );
 }
 
@@ -35,6 +64,7 @@ function BgMusic({ audioRef, isPlaying }) {
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.loop = true;
+      audioRef.current.volume = 0.5; // Lower volume for background music
     }
   }, [audioRef]);
 
@@ -63,7 +93,8 @@ function FloatingIcon({ Icon, delay }) {
       animate={{
         y: [0, 20, 0],
         opacity: [0.2, 1, 0.2],
-        x: [0, 10, 0]
+        x: [0, 10, 0],
+        rotate: [0, 10, -10, 0]
       }}
       transition={{
         duration: 4,
@@ -74,7 +105,8 @@ function FloatingIcon({ Icon, delay }) {
       className="absolute"
       style={{
         left: `${initialX}%`,
-        top: `${initialY}%`
+        top: `${initialY}%`,
+        filter: 'drop-shadow(0 0 8px rgba(255, 111, 105, 0.5))'
       }}
     >
       <Icon className="text-[#FF6F69]" size={28} />
@@ -83,7 +115,6 @@ function FloatingIcon({ Icon, delay }) {
 }
 
 // Cartoon-inspired SongCard with audio controls and progress bar
-// Uses the shared audioRef passed via props.
 function SongCard({ onSongChoice, audioRef }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -103,7 +134,6 @@ function SongCard({ onSongChoice, audioRef }) {
     });
     return () => {
       audio.removeEventListener('timeupdate', updateProgress);
-      // Do not pause here, so that the shared audio continues playing.
     };
   }, [audioRef]);
 
@@ -112,7 +142,6 @@ function SongCard({ onSongChoice, audioRef }) {
       setShowProgressBar(true);
       audioRef.current.play();
       setIsPlaying(true);
-      // Wait for 3 seconds then transition smoothly
       setTimeout(() => {
         onSongChoice();
       }, 3000);
@@ -127,7 +156,10 @@ function SongCard({ onSongChoice, audioRef }) {
   };
 
   const handleSkipForward = () => {
-    audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 10);
+    audioRef.current.currentTime = Math.min(
+      audioRef.current.duration, 
+      audioRef.current.currentTime + 10
+    );
   };
 
   return (
@@ -137,16 +169,24 @@ function SongCard({ onSongChoice, audioRef }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -50, scale: 0.8 }}
       transition={{ duration: 0.8, ease: "easeInOut" }}
-      className="bg-white p-6 rounded-2xl shadow-2xl border-4 border-dashed border-[#FF6F69] max-w-md w-full"
+      className="bg-white p-6 rounded-2xl shadow-2xl border-4 border-dashed border-[#FF6F69] max-w-md w-full relative overflow-hidden"
       style={{ fontFamily: 'Comic Neue, Comic Sans MS, cursive' }}
     >
+      {/* Decorative elements */}
+      <motion.div 
+        className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-[#FFEEAD]/20"
+        animate={{ scale: [1, 1.2, 1] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+      />
+      
       <div className="flex flex-col items-center">
-        {/* Song Cover with overlay play/pause control */}
         <div className="w-48 h-48 mb-4 relative">
-          <img 
-            src="https://via.placeholder.com/300/FFEEAD/FF6F69?text=Cover" 
+          <motion.img 
+            src= {CoverImg}
             alt="Song Cover" 
-            className="w-full h-full object-cover rounded-lg" 
+            className="w-full h-full object-cover rounded-lg"
+            animate={{ scale: [1, 1.03, 1] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
           />
           <motion.div 
             onClick={togglePlay}
@@ -155,22 +195,25 @@ function SongCard({ onSongChoice, audioRef }) {
             whileTap={{ scale: 0.95 }}
           >
             {isPlaying ? (
-              <Music2 size={48} className="text-white" />
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              >
+                <Music2 size={48} className="text-white" />
+              </motion.div>
             ) : (
               <Music size={48} className="text-white" />
             )}
           </motion.div>
         </div>
-        {/* Song Info */}
         <div className="w-full text-center mb-4">
-          <h3 className="text-2xl font-bold text-[#FF6F69]">Comic Birthday Anthem</h3>
-          <p className="text-sm text-gray-700">The Birthday Band</p>
+          <h3 className="text-2xl font-bold text-[#FF6F69]">Zaalima</h3>
+          <p className="text-sm text-gray-700">Your Favourite</p>
         </div>
-        {/* Control Buttons */}
         <div className="flex items-center justify-center space-x-6 mb-4">
           <motion.button
             onClick={handleSkipBackward}
-            whileHover={{ scale: 1.1 }}
+            whileHover={{ scale: 1.1, rotate: -10 }}
             whileTap={{ scale: 0.95 }}
             className="text-gray-800"
           >
@@ -186,14 +229,13 @@ function SongCard({ onSongChoice, audioRef }) {
           </motion.button>
           <motion.button
             onClick={handleSkipForward}
-            whileHover={{ scale: 1.1 }}
+            whileHover={{ scale: 1.1, rotate: 10 }}
             whileTap={{ scale: 0.95 }}
             className="text-gray-800"
           >
             <SkipForward size={32} />
           </motion.button>
         </div>
-        {/* Progress Bar */}
         {showProgressBar && (
           <div className="w-full h-2 bg-gray-300 rounded-full overflow-hidden">
             <motion.div 
@@ -212,9 +254,7 @@ function SongCard({ onSongChoice, audioRef }) {
 
 // Main App component managing the experience stages
 function App() {
-  // Create a shared audioRef for bgMusic
   const audioRef = useRef(new Audio(bgMusic));
-
   const [stage, setStage] = useState(0);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
@@ -227,10 +267,10 @@ function App() {
     if (!isMusicPlaying) setIsMusicPlaying(true);
   };
 
+  // Simple array of messages to display in stage 0
   const messages = [
-    "Hey Superstar! Happy Birthday!",
-    "Get ready for a wild, cartoon adventure...",
-    "You’re the hero of this comic celebration!"
+    "It's your birthday and i had to do something special...",
+    "Soooo, I prepared this for youuuu",
   ];
 
   const messageVariants = {
@@ -240,11 +280,22 @@ function App() {
       y: 0, 
       scale: 1, 
       filter: 'blur(0px)',
-      transition: { duration: 0.9, ease: "easeInOut", scale: { type: "spring", damping: 20, stiffness: 100 } }
+      transition: { 
+        duration: 0.9, 
+        ease: "easeInOut", 
+        scale: { type: "spring", damping: 20, stiffness: 100 } 
+      }
     },
-    exit: { opacity: 0, y: -30, scale: 0.95, filter: 'blur(4px)', transition: { duration: 0.6, ease: "easeInOut" } }
+    exit: { 
+      opacity: 0, 
+      y: -30, 
+      scale: 0.95, 
+      filter: 'blur(4px)', 
+      transition: { duration: 0.6, ease: "easeInOut" } 
+    }
   };
 
+  // Progress through the short messages in stage 0
   useEffect(() => {
     const messageTimer = setTimeout(() => {
       if (currentMessageIndex < messages.length - 1) {
@@ -285,7 +336,6 @@ function App() {
             style={{ fontFamily: 'Comic Neue, Comic Sans MS, cursive' }}
           >
             <AnimatedBackground />
-
             <div className="absolute inset-0 z-10">
               {floatingIcons.map((Icon, index) =>
                 Array.from({ length: 3 }).map((_, i) => (
@@ -293,7 +343,6 @@ function App() {
                 ))
               )}
             </div>
-
             <div className="relative z-20 flex items-center justify-center min-h-screen px-4">
               <AnimatePresence mode="wait">
                 {!showSongMessage && !showFinalMessage ? (
@@ -303,16 +352,30 @@ function App() {
                     initial="initial"
                     animate="animate"
                     exit="exit"
-                    className="bg-white p-12 rounded-2xl shadow-2xl border-4 border-dashed border-[#FF6F69] max-w-lg w-full text-center"
+                    className="bg-white p-12 rounded-2xl shadow-2xl border-4 border-dashed border-[#FF6F69] max-w-lg w-full text-center relative overflow-hidden"
                   >
+                    {/* Decorative corner elements */}
+                    <div className="absolute -top-4 -left-4 w-16 h-16 rounded-full bg-[#FFEEAD]/30" />
+                    <div className="absolute -bottom-4 -right-4 w-16 h-16 rounded-full bg-[#FF6F69]/30" />
+                    
                     <motion.div
-                      animate={{ rotate: [0, 360] }}
-                      transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                      animate={{ rotate: [0, 360], scale: [1, 1.2, 1] }}
+                      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                       className="mb-8 flex justify-center"
                     >
                       <Sparkles className="text-[#FF6F69]" size={48} />
                     </motion.div>
-                    <motion.p className="text-2xl font-bold text-[#FF6F69] mb-10">
+                    <motion.p 
+                      className="text-2xl font-bold text-[#FF6F69] mb-10"
+                      animate={{ 
+                        textShadow: [
+                          '0 0 0px rgba(255,111,105,0)',
+                          '0 0 10px rgba(255,111,105,0.5)',
+                          '0 0 0px rgba(255,111,105,0)'
+                        ]
+                      }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                    >
                       {messages[currentMessageIndex]}
                     </motion.p>
                     {showButtons && (
@@ -322,15 +385,33 @@ function App() {
                         transition={{ duration: 0.7 }}
                         className="flex justify-center space-x-6"
                       >
-                        {['Let\'s Party!', 'Show Me The Fun!'].map((text) => (
+                        {['Let\'s See!', 'Yeyey!'].map((text) => (
                           <motion.button
                             key={text}
                             onClick={handleButtonClick}
-                            whileHover={{ scale: 1.05 }}
+                            whileHover={{ 
+                              scale: 1.05,
+                              background: [
+                                'linear-gradient(to right, #FF6F69, #FFEEAD)',
+                                'linear-gradient(to right, #FFEEAD, #FF6F69)'
+                              ]
+                            }}
                             whileTap={{ scale: 0.95 }}
-                            className="px-8 py-4 rounded-full font-medium transition transform bg-gradient-to-r from-[#FF6F69] to-[#FFEEAD] text-white shadow-md"
+                            className="px-8 py-4 rounded-full font-medium bg-gradient-to-r from-[#FF6F69] to-[#ffae23] text-white shadow-md relative overflow-hidden"
                           >
-                            {text}
+                            <span className="relative z-10">{text}</span>
+                            <motion.span
+                              className="absolute inset-0 bg-white/20"
+                              animate={{ 
+                                x: ['-100%', '100%'],
+                                opacity: [0, 0.3, 0]
+                              }}
+                              transition={{ 
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            />
                           </motion.button>
                         ))}
                       </motion.div>
@@ -344,14 +425,39 @@ function App() {
                     variants={messageVariants}
                     initial="initial"
                     animate="animate"
-                    className="bg-white p-12 rounded-2xl shadow-2xl border-4 border-dashed border-[#FF6F69] max-w-lg w-full text-center"
+                    className="bg-white p-12 rounded-2xl shadow-2xl border-4 border-dashed border-[#FF6F69] max-w-lg w-full text-center relative overflow-hidden"
                   >
-                    <motion.p
-                      animate={{ scale: [1, 1.1, 1] }}
-                      transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                      className="text-2xl font-bold text-[#FF6F69]"
+                    <motion.div
+                      className="absolute inset-0 flex items-center justify-center"
+                      animate={{ 
+                        scale: [1, 1.5, 1],
+                        opacity: [0, 0.3, 0]
+                      }}
+                      transition={{ 
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeOut"
+                      }}
                     >
-                      Time to kick off the comic adventure!
+                      <Stars className="text-[#FF6F69]" size={120} />
+                    </motion.div>
+                    <motion.p
+                      animate={{ 
+                        scale: [1, 1.1, 1],
+                        textShadow: [
+                          '0 0 0px rgba(255,111,105,0)',
+                          '0 0 15px rgba(255,111,105,0.8)',
+                          '0 0 0px rgba(255,111,105,0)'
+                        ]
+                      }}
+                      transition={{ 
+                        duration: 3, 
+                        repeat: Infinity, 
+                        ease: "easeInOut" 
+                      }}
+                      className="text-2xl font-bold text-[#FF6F69] relative z-10"
+                    >
+                      Lesss Gooooo!
                     </motion.p>
                   </motion.div>
                 )}
@@ -359,7 +465,6 @@ function App() {
             </div>
           </motion.div>
         );
-
       case 1:
         return <Room isLightOn={isLightOn} onComplete={() => setStage(2)} />;
       case 2:
@@ -380,24 +485,33 @@ function App() {
 
   return (
     <div className="relative" style={{ fontFamily: 'Comic Neue, Comic Sans MS, cursive' }}>
+      {/* Music Toggle Button */}
       <motion.button
         className="fixed top-5 right-5 z-50 bg-white/80 backdrop-blur rounded-full p-3 shadow-lg border border-gray-200"
-        whileHover={{ scale: 1.1 }}
+        whileHover={{ 
+          scale: 1.1,
+          rotate: [0, 10, -10, 0],
+          backgroundColor: isMusicPlaying ? '#FFEEAD' : '#FF6F69'
+        }}
         whileTap={{ scale: 0.9 }}
         onClick={toggleMusic}
+        animate={{ 
+          backgroundColor: isMusicPlaying ? '#FF6F69' : '#FFFFFF',
+          color: isMusicPlaying ? '#FFFFFF' : '#FF6F69'
+        }}
       >
-        {isMusicPlaying ? (
-          <Music2 size={24} className="text-[#FF6F69]" />
-        ) : (
-          <Music size={24} className="text-gray-800" />
-        )}
+        {isMusicPlaying ? <Music2 size={24} /> : <Music size={24} />}
       </motion.button>
 
       <BgMusic audioRef={audioRef} isPlaying={isMusicPlaying} />
-
       <AnimatePresence mode="wait">{renderStage()}</AnimatePresence>
     </div>
   );
 }
 
-export default App;
+// Main Component 
+function Main() {
+  return <App />;
+}
+
+export default Main;

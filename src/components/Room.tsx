@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
-import BurstS from './burst.mp3';
+import BurstS from './soundfx/burst.mp3';
 
 interface Balloon {
   id: string;
@@ -111,8 +111,8 @@ export const Room: React.FC<RoomProps> = ({ onComplete }) => {
     >
       {/* Heading & Score */}
       <div className="absolute top-4 left-4 z-20">
-        <h1 className="text-3xl font-bold text-red-500 drop-shadow-lg">Pop & Play!</h1>
-        <p className="text-xl text-purple-600">Score: {score}</p>
+        <h1 className="text-3xl font-bold text-red-500 drop-shadow-lg">Let's see how many balloons you can pop!</h1>
+        <p className="text-xl text-purple-600">Your Score: {score}</p>
       </div>
 
       {/* Reward Message */}
@@ -126,7 +126,7 @@ export const Room: React.FC<RoomProps> = ({ onComplete }) => {
             Bonus Reward Unlocked!
           </h2>
           <p className="mt-4 text-lg text-gray-800 text-center">
-            You're on fire! Keep popping those balloons!
+            Fried Momos For You Yeyey!
           </p>
         </motion.div>
       )}
