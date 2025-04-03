@@ -10,7 +10,7 @@ import Pic5 from "./img/extra2.jpg"; // Extra small photo
 // Import local playlist music files
 import songA from "./music/kinnasona.mp3";
 import songB from "./music/tummile.mp3";
-import songC from "./music/rangrez.mp3";
+import songC from "./music/wannabeyours.mp3";
 
 interface Photo {
   url: string;
@@ -39,7 +39,7 @@ const extraPhotos: Photo[] = [
 ];
 
 // Playlist song names and corresponding local music files
-const playlist = ["Kinna Sona", "Tum Mile", "O Rangrez"];
+const playlist = ["Kinna Sona", "Tum Mile", "wannabeyours"];
 const songFiles = [songA, songB, songC];
 
 interface PhotoGalleryProps {
@@ -50,7 +50,7 @@ interface PhotoGalleryProps {
 // TimelineComponent based on your timeline example
 const TimelineComponent: React.FC<{ onProceed: () => void }> = ({ onProceed }) => {
   const timelineEvents = [
-    { icon: "🌟", title: "Starting From Here", desc: "You know very well, you texted me" },
+    { icon: "🌟", title: "Starting From Here", desc: "You know very well, how much you mean to me" },
     { icon: "💌", title: "We talked", desc: "We started talking and the connection was instant" },
     { icon: "🎵", title: "I Enjoyed talking to you", desc: "You have an amazing music taste, by the way" },
     { icon: "✨", title: "To be continued...", desc: "Our story is just beginning" }

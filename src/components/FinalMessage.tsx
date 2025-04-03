@@ -10,7 +10,7 @@ export const FinalMessage: React.FC = () => {
   const postcards = [
     {
       color: "red",
-      message: "You're the WILD CARD in my life - always full of surprises!",
+      message: "Every moment with you is special.",
       symbol: "🃏"
     },
     {
@@ -25,7 +25,7 @@ export const FinalMessage: React.FC = () => {
     },
     {
       color: "blue",
-      message: "Our friendship SKIPS all the boring parts!",
+      message: "Your smile is my favorite sight!",
       symbol: "⏭️"
     },
     {
@@ -203,7 +203,7 @@ export const FinalMessage: React.FC = () => {
                 repeatType: "reverse"
               }}
             >
-              ILYSM 💖
+              YOU ARE THE MOST IMPORTANT PERSON OF MT LIFE 💖
             </motion.div>
           </div>
         </motion.div>
